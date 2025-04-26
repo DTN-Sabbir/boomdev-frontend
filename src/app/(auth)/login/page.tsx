@@ -16,6 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import api from "@/lib/utils";
+import axios from "axios";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -37,7 +40,7 @@ export default function Login() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    
+    // Handle the form submission here
     console.log(values);
   }
   return (
@@ -91,6 +94,9 @@ export default function Login() {
             >
               Submit
             </Button>
+            <Link href="/register" className="ml-2 underline text-blue-500">
+              Or Register
+            </Link>
           </form>
         </Form>
       </div>
