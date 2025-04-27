@@ -132,7 +132,13 @@ export function ProductForm({
             </FormItem>
           )}
         />
-        <Button type="submit"> {action == "post" ? "Create" : "Update"}</Button>
+        <Button
+          type="submit"
+          className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+        >
+          {" "}
+          {action == "post" ? "Create" : "Update"}
+        </Button>
       </form>
     </Form>
   );
