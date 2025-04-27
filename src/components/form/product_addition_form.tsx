@@ -13,15 +13,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Endpoints } from "@/lib/api";
+import api from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Enter  Product Name",
   }),
-  price: z.string().min(2, {
+  price: z.string().min(1, {
     message: "Enter Product Price",
   }),
-  stock: z.string().min(2, {
+  stock: z.string().min(1, {
     message: "Enter Product Stock",
   }),
   description: z.string().min(2, {
@@ -29,19 +31,50 @@ const formSchema = z.object({
   }),
 });
 
-export function ProfileForm() {
+export function ProductForm({
+  action,
+  product,
+  onSave,
+}: {
+  action: "post" | "patch";
+  product?: {
+    id: number;
+    name: string;
+    description: string;
+    price: string;
+    stock: string;
+  };
+  onSave: () => void;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      price: "",
-      description: "",
-      stock: "",
+      name: product?.name || "",
+      price: product?.price || "",
+      description: product?.description || "",
+      stock: product?.stock || "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const url =
+        action === "post"
+          ? `${Endpoints.PRODUCTS}`
+          : `${Endpoints.PRODUCTS}${product?.id}/`;
+      const method = action === "post" ? "post" : "patch";
+      const response = await api[method](url, {
+        name: values.name,
+        price: values.price,
+        description: values.description,
+        stock: values.stock,
+      });
+      if (response.status === 200 || response.status === 201) {
+        onSave();
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   }
 
   return (
@@ -99,7 +132,7 @@ export function ProfileForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit"> {action == "post" ? "Create" : "Update"}</Button>
       </form>
     </Form>
   );
